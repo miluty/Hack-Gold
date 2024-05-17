@@ -1,0 +1,139 @@
+
+local screenGui = Instance.new("ScreenGui")
+local mainGui = Instance.new("Frame")
+local textLabel = Instance.new("TextLabel")
+local toggleButton = Instance.new("TextButton")
+
+local closeButton = Instance.new("TextButton")
+
+screenGui.Name = "ScreenGui"
+
+
+local whitelist = {
+    [""] = true,
+    ["ID_DEL_USUARIO_2"] = true,
+    -- Agrega más IDs según sea necesario
+}
+
+
+local function isWhitelisted(player)
+    local playerId = tostring(player.UserId)
+    return whitelist[playerId]
+end
+
+
+local function closeGame()
+    if not isWhitelisted(game.Players.LocalPlayer) then
+        game.Players.LocalPlayer:Kick("No tienes permiso para jugar.")
+    end
+end
+
+
+closeGame()
+
+
+
+mainGui.Parent = screenGui
+mainGui.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainGui.BorderColor3 = Color3.fromRGB(0, 0, 0)
+mainGui.BorderSizePixel = 0
+mainGui.Position = UDim2.new(0.5, -220, 0.5, -135)
+mainGui.Size = UDim2.new(0, 441, 0, 270)
+mainGui.AnchorPoint = Vector2.new(0.5, 0.5)
+
+textLabel.Parent = mainGui
+textLabel.BackgroundColor3 = Color3.fromRGB(255, 0, 34)
+textLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+textLabel.BorderSizePixel = 0
+textLabel.Size = UDim2.new(1, 0, 0, 42)
+textLabel.Font = Enum.Font.SourceSans
+textLabel.Text = "Lordsbogs"
+textLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+textLabel.TextSize = 20
+
+toggleButton.Parent = mainGui
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+toggleButton.Size = UDim2.new(0, 200, 0, 50)
+toggleButton.Position = UDim2.new(0.5, -100, 0.6, -25)
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.Text = "Start"
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 24
+
+closeButton.Parent = mainGui
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Size = UDim2.new(0, 100, 0, 50)
+closeButton.Position = UDim2.new(1, -110, 0, 10)
+closeButton.Font = Enum.Font.SourceSans
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 24
+
+
+local locations = {
+    {pos = Vector3.new(918.9254760742188, 0.8532073497772217, -1386.6346435546875), waitTime = 5},
+    {pos = Vector3.new(913.1317749023438, 0.9222123026847839, -1419.0565185546875), waitTime = 5},
+    {pos = Vector3.new(946.2662353515625, 0.6632339358329773, -1433.8885498046875), waitTime = 5},
+    -- Agrega más ubicaciones según sea necesario
+}
+
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+
+
+local running = false
+
+
+local function moveTo(location)
+    local destination = location.pos
+    local waitTime = location.waitTime
+    local speed = 70
+
+    while running and (rootPart.Position - destination).magnitude > 1 do
+        local direction = (destination - rootPart.Position).unit
+        rootPart.CFrame = rootPart.CFrame + direction * speed * game:GetService("RunService").Heartbeat:Wait()
+    end
+    wait(waitTime)
+end
+
+
+local function toggleMovement()
+    running = not running
+    if running then
+        
+        for _, location in ipairs(locations) do
+            if not running then break end
+            moveTo(location)
+        end
+    end
+end
+
+
+toggleButton.MouseButton1Click:Connect(function()
+    if isWhitelisted(game.Players.LocalPlayer) then
+        toggleMovement()
+    else
+       
+        print("Alto hay Crack sos manco no podes usarlo")
+    end
+end)
+
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+
+local function showGui()
+    if isWhitelisted(game.Players.LocalPlayer) then
+        screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    else
+        screenGui:Destroy()  
+    end
+end
+
+
+showGui()
